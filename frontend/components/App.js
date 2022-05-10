@@ -5,7 +5,8 @@ const URL = 'http://localhost:9000/api/todos';
 
 export default class App extends React.Component {
   state = {
-    toDoItems: []
+    toDoItems: [],
+    taskNameInput: ''
   }
 
   fetchAllToDoItems = () => {
@@ -20,6 +21,25 @@ export default class App extends React.Component {
     this.fetchAllToDoItems();
   }
 
+  onTaskNameInputChange = (event) => {
+    const { value } = event.target;
+    this.setState({ ...this.state, taskNameInput: value });
+  }
+
+  postNewToDoItem = () => {
+    axios.post(URL, { name: this.state.taskNameInput })
+      .then(response => {
+        this.setState({ ...this.state, toDoItems: this.state.toDoItems.concat(response.data.data) })
+        this.setState({ ...this.state, taskNameInput: '' })
+      })
+      .catch(error => console.error(error))
+  }
+
+  onTaskFormSubmit = (event) => {
+    event.preventDefault();
+    this.postNewToDoItem();
+  }
+
   render() {
     return (
       <div>
@@ -31,10 +51,10 @@ export default class App extends React.Component {
             })
           }
         </div>
-        <form>
-          <input type='text' placeholder='Enter new task here'></input>
+        <form onSubmit={this.onTaskFormSubmit}>
+          <input type='text' placeholder='Enter new task here' value={this.state.taskNameInput} onChange={this.onTaskNameInputChange}></input>
           <button>Add</button>
-          <button>Clear</button>
+          <button>Clear Completed Tasks</button>
         </form>
       </div>
     )
