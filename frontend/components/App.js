@@ -6,7 +6,8 @@ const URL = 'http://localhost:9000/api/todos';
 export default class App extends React.Component {
   state = {
     toDoItems: [],
-    taskNameInput: ''
+    taskNameInput: '',
+    displayCompletedTasks: true
   }
 
   fetchAllToDoItems = () => {
@@ -51,22 +52,29 @@ export default class App extends React.Component {
       .catch(error => console.error(error))
   }
 
+  toggleDisplayCompletedTasks = () => {
+    this.setState({ ...this.state, displayCompletedTasks: !this.state.displayCompletedTasks })
+  }
+
   render() {
     return (
       <div>
         <div>
           <h2>To Do:</h2>
           {
-            this.state.toDoItems.map(task => {
-              return <div key={task.id} onClick={this.toggleCompleted(task.id)}>{task.name} {task.completed ? <span>-completed</span> : <span></span>}</div>
-            })
+            this.state.toDoItems.reduce((accumulator, task) => {
+              if (this.state.displayCompletedTasks || !task.completed) return accumulator.concat(
+                <div key={task.id} onClick={this.toggleCompleted(task.id)}>{task.name} {task.completed ? <span>-completed</span> : <span></span>}</div>
+              )
+              return accumulator;
+            }, [])
           }
         </div>
         <form onSubmit={this.onTaskFormSubmit}>
           <input type='text' placeholder='Enter new task here' value={this.state.taskNameInput} onChange={this.onTaskNameInputChange}></input>
           <button>Add</button>
-          <button>Clear Completed Tasks</button>
         </form>
+        <button onClick={this.toggleDisplayCompletedTasks}>Clear Completed Tasks</button>
       </div>
     )
   }
