@@ -1,6 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 
+import Form from './Form';
+import TodoList from './TodoList';
+
 const URL = 'http://localhost:9000/api/todos';
 
 export default class App extends React.Component {
@@ -59,22 +62,17 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
-        <div>
-          <h2>To Do:</h2>
-          {
-            this.state.toDoItems.reduce((accumulator, task) => {
-              if (this.state.displayCompletedTasks || !task.completed) return accumulator.concat(
-                <div key={task.id} onClick={this.toggleCompleted(task.id)}>{task.name} {task.completed ? <span>-completed</span> : <span></span>}</div>
-              )
-              return accumulator;
-            }, [])
-          }
-        </div>
-        <form onSubmit={this.onTaskFormSubmit}>
-          <input type='text' placeholder='Enter new task here' value={this.state.taskNameInput} onChange={this.onTaskNameInputChange}></input>
-          <button>Add</button>
-        </form>
-        <button onClick={this.toggleDisplayCompletedTasks}>Clear Completed Tasks</button>
+        <TodoList
+          toDoItems={this.state.toDoItems}
+          displayCompletedTasks={this.state.displayCompletedTasks}
+          toggleCompleted={this.toggleCompleted}
+        />
+        <Form
+          onTaskFormSubmit={this.onTaskFormSubmit}
+          taskNameInput={this.state.taskNameInput}
+          onTaskNameInputChange={this.onTaskNameInputChange}
+          toggleDisplayCompletedTasks={this.toggleDisplayCompletedTasks}
+        />
       </div>
     )
   }
