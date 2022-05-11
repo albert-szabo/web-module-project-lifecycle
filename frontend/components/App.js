@@ -40,6 +40,17 @@ export default class App extends React.Component {
     this.postNewToDoItem();
   }
 
+  toggleCompleted = (id) => () => {
+    axios.patch(`${URL}/${id}`)
+      .then(response => {
+        this.setState({ ...this.state, toDoItems: this.state.toDoItems.map(task => {
+          if (task.id !== id) return task;
+          return response.data.data;
+        })})
+      })
+      .catch(error => console.error(error))
+  }
+
   render() {
     return (
       <div>
@@ -47,7 +58,7 @@ export default class App extends React.Component {
           <h2>To Do:</h2>
           {
             this.state.toDoItems.map(task => {
-              return <div key={task.id}>{task.name}</div>
+              return <div key={task.id} onClick={this.toggleCompleted(task.id)}>{task.name} {task.completed ? <span>-completed</span> : <span></span>}</div>
             })
           }
         </div>
